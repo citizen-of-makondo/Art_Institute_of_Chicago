@@ -33,7 +33,10 @@ fun App() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
+                    Image(
+                        painter = painterResource(resource = Res.drawable.compose_multiplatform),
+                        contentDescription = null
+                    )
                     Text("Compose: $greeting")
                 }
             }
