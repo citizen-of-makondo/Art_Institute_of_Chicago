@@ -1,0 +1,106 @@
+package art.data.mappers
+
+import art.data.dto.ArtDataDto
+import art.data.dto.ArtDto
+import art.data.dto.ArtResponseDto
+import art.domain.Art
+import art.domain.ArtItem
+import art.domain.Pagination
+
+fun ArtResponseDto.toDomain(): Art =
+    Art(
+        pagination = Pagination(pagination.currentPage),
+        art = data.map { it.toDomain() }
+    )
+
+fun ArtDto.toDomain(): ArtItem = data.toDomain()
+
+fun ArtDataDto.toDomain(): ArtItem =
+    ArtItem(
+        id = id,
+        apiModel = apiModel,
+        apiLink = apiLink,
+        isBoosted = isBoosted,
+        title = title,
+        altTitles = altTitles,
+        mainReferenceNumber = mainReferenceNumber,
+        hasNotBeenViewedMuch = hasNotBeenViewedMuch,
+        boostRank = boostRank,
+        dateStart = dateStart,
+        dateEnd = dateEnd,
+        dateDisplay = dateDisplay,
+        dateQualifierTitle = dateQualifierTitle,
+        dateQualifierId = dateQualifierId,
+        artistDisplay = artistDisplay,
+        placeOfOrigin = placeOfOrigin,
+        description = description,
+        shortDescription = shortDescription,
+        dimensions = dimensions,
+        mediumDisplay = mediumDisplay,
+        inscriptions = inscriptions,
+        creditLine = creditLine,
+        catalogueDisplay = catalogueDisplay,
+        publicationHistory = publicationHistory,
+        exhibitionHistory = exhibitionHistory,
+        provenanceText = provenanceText,
+        edition = edition,
+        publishingVerificationLevel = publishingVerificationLevel,
+        internalDepartmentId = internalDepartmentId,
+        fiscalYear = fiscalYear,
+        fiscalYearDeaccession = fiscalYearDeaccession,
+        isPublicDomain = isPublicDomain,
+        isZoomable = isZoomable,
+        maxZoomWindowSize = maxZoomWindowSize,
+        copyrightNotice = copyrightNotice,
+        hasMultimediaResources = hasMultimediaResources,
+        hasEducationalResources = hasEducationalResources,
+        hasAdvancedImaging = hasAdvancedImaging,
+        colorfulness = colorfulness,
+        isOnView = isOnView,
+        onLoanDisplay = onLoanDisplay,
+        galleryTitle = galleryTitle,
+        galleryId = galleryId,
+        nomismaId = nomismaId,
+        artworkTypeTitle = artworkTypeTitle,
+        artworkTypeId = artworkTypeId,
+        departmentTitle = departmentTitle,
+        departmentId = departmentId,
+        artistId = artistId,
+        artistTitle = artistTitle,
+        altArtistIds = altArtistIds,
+        artistIds = artistIds,
+        artistTitles = artistTitles,
+        termTitles = termTitles,
+        styleId = styleId,
+        styleTitle = styleTitle,
+        altStyleIds = altStyleIds,
+        styleIds = styleIds,
+        styleTitles = styleTitles,
+        classificationId = classificationId,
+        classificationTitle = classificationTitle,
+        subjectId = subjectId,
+        altSubjectIds = altSubjectIds,
+        subjectIds = subjectIds,
+        subjectTitles = subjectTitles,
+        materialId = materialId,
+        altMaterialIds = altMaterialIds,
+        materialIds = materialIds,
+        materialTitles = materialTitles,
+        techniqueId = techniqueId,
+        altTechniqueIds = altTechniqueIds,
+        techniqueIds = techniqueIds,
+        techniqueTitles = techniqueTitles,
+        themeTitles = themeTitles,
+        imageId = "https://www.artic.edu/iiif/2/${imageId}/full/843,/0/default.jpg",
+        altImageIds = altImageIds,
+        documentIds = documentIds,
+        soundIds = soundIds,
+        videoIds = videoIds,
+        textIds = textIds,
+       // sectionIds = sectionIds,
+        sectionTitles = sectionTitles,
+        siteIds = siteIds,
+        sourceUpdatedAt = sourceUpdatedAt,
+        updatedAt = updatedAt,
+        timestamp = timestamp
+    )
