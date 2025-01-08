@@ -8,7 +8,6 @@ import art.domain.ArtworkRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,12 +18,15 @@ class ArtListViewModel(
 
     private val _state = MutableStateFlow(ArtListState())
     val state = _state.asStateFlow()
-        .onStart { getAllArtworks() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = _state.value
         )
+
+    init {
+        getAllArtworks()
+    }
 
     fun onAction(action: ArtListAction) {
         when(action) {

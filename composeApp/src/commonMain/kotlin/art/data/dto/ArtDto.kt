@@ -20,7 +20,6 @@ data class ArtDataDto(
     val title: String?,
     @SerialName("alt_titles")
     val altTitles: List<String>?, // check
-    val thumbnail: Thumbnail?,
     @SerialName("main_reference_number")
     val mainReferenceNumber: String?,
     @SerialName("has_not_been_viewed_much")
@@ -58,7 +57,7 @@ data class ArtDataDto(
     val exhibitionHistory: String?,
     @SerialName("provenance_text")
     val provenanceText: String?,
-    val edition: List<String>?, // check
+   // val edition: List<String>?, // check
     @SerialName("publishing_verification_level")
     val publishingVerificationLevel: String?,
     @SerialName("internal_department_id")
@@ -176,13 +175,4 @@ data class ArtDataDto(
     @SerialName("updated_at")
     val updatedAt: String?,
     val timestamp: String?
-)
-
-@Serializable
-data class Thumbnail(
-    val lqip: String,
-    val width: Long,
-    val height: Long,
-    @SerialName("alt_text")
-    val altText: String,
 )

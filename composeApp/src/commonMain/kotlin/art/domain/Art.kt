@@ -36,7 +36,7 @@ data class ArtItem(
     val publicationHistory: String?,
     val exhibitionHistory: String?,
     val provenanceText: String?,
-    val edition: List<String>?, // check
+  //  val edition: List<String>?, // check
     val publishingVerificationLevel: String?,
     val internalDepartmentId: Long?,
     val fiscalYear: Long?,

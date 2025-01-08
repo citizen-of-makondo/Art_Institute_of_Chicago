@@ -13,6 +13,23 @@ plugins {
 }
 
 kotlin {
+    val osName = System.getProperty("os.name")
+    val targetOs = when {
+        osName == "Mac OS X" -> "macos"
+        osName.startsWith("Win") -> "windows"
+        osName.startsWith("Linux") -> "linux"
+        else -> error("Unsupported OS: $osName")
+    }
+
+    val targetArch = when (val osArch = System.getProperty("os.arch")) {
+        "x86_64", "amd64" -> "x64"
+        "aarch64" -> "arm64"
+        else -> error("Unsupported arch: $osArch")
+    }
+
+    val version = "0.8.18" // or any more recent version
+    val target = "${targetOs}-${targetArch}"
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
@@ -49,6 +66,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
+            implementation(compose.material3)
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
@@ -65,6 +83,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.core)
+            implementation(libs.richeditor.compose)
 
             implementation(libs.bundles.ktor)
             implementation(libs.bundles.coil)
@@ -73,7 +92,9 @@ kotlin {
              implementation(libs.androidx.paging.compose)
         */
         }
+
         desktopMain.dependencies {
+            implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:$version")
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
