@@ -12,7 +12,6 @@ import art.presentation.art_details.ArtDetailsAction
 import art.presentation.art_details.ArtDetailsRoot
 import art.presentation.art_details.ArtDetailsViewModel
 import art.presentation.art_list.ArtListRoot
-import art.presentation.artist_list.ArtistListRoot
 import art.presentation.main_screen.MainScreenRoot
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -25,7 +24,6 @@ fun RootNavGraph(rootNavController: NavHostController) {
         composable<Route.Main> {
             MainScreenRoot(
                 navigateToArtworkList = { rootNavController.navigate(Route.ArtList) },
-                navigateToArtistList = { rootNavController.navigate(Route.ArtistList) }
             )
         }
 
@@ -56,10 +54,6 @@ fun RootNavGraph(rootNavController: NavHostController) {
                     rootNavController.popBackStack()
                 }
             )
-        }
-
-        composable<Route.ArtistList> {
-            ArtistListRoot()
         }
     }
 }

@@ -95,6 +95,11 @@ fun ArtDetailsPhone(state: ArtDetailState) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        AsyncImage(
+            model = "https://www.artic.edu/iiif/2/${state.art?.imageId.orEmpty()}/full/843,/0/default.jpg",
+            contentDescription = state.art?.title.orEmpty()
+        )
+
         state.art?.artistDisplay?.run {
             CharacteristicItem(
                 title = "Artist",
@@ -221,12 +226,6 @@ fun CharacteristicItem(
     title: String,
     value: String
 ) {
-    val richState = rememberRichTextState()
-    richState.config.linkColor = Color.Blue
-    richState.config.linkTextDecoration = TextDecoration.Underline
-    richState.setHtml(value)
-    richState.toHtml()
-
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(3.dp),
@@ -236,6 +235,12 @@ fun CharacteristicItem(
             style = MaterialTheme.typography.titleMedium
         )
 
-        RichText(state = richState)
+        RichText(
+            state = rememberRichTextState().apply {
+                setHtml(value)
+                config.linkColor = Color.Blue
+                config.linkTextDecoration = TextDecoration.Underline
+            }
+        )
     }
 }

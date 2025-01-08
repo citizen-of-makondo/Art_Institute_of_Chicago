@@ -12,10 +12,4 @@ sealed interface Route {
 
     @Serializable
     data class ArtDetails(val artId: Long) : Route
-
-    @Serializable
-    data object ArtistList : Route
-
-    @Serializable
-    data class ArtistDetails(val artistId: Long) : Route
 }

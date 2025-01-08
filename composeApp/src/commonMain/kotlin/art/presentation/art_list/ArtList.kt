@@ -16,12 +16,14 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -42,6 +44,11 @@ import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
+enum class ArtListScreenState {
+    DEFAULT,
+    SEARCH
+}
+
 @Composable
 fun ArtListRoot(
     viewModel: ArtListViewModel = koinViewModel(),
@@ -59,7 +66,6 @@ fun ArtListRoot(
 
 @Composable
 fun AnimatedCircularProgressIndicator() {
-    // Список цветов для анимации
     val colors = listOf(
         Color.Red,
         Color.Green,
@@ -68,10 +74,8 @@ fun AnimatedCircularProgressIndicator() {
         Color.Magenta
     )
 
-    // Запоминаем индекс текущего цвета
     var colorIndex by remember { mutableStateOf(0) }
 
-    // Запускаем цикл смены цветов каждые 100 мс
     LaunchedEffect(Unit) {
         while (true) {
             colorIndex = (colorIndex + 1) % colors.size
@@ -79,13 +83,11 @@ fun AnimatedCircularProgressIndicator() {
         }
     }
 
-    // Анимация цвета
     val animatedColor by animateColorAsState(
         targetValue = colors[colorIndex],
         animationSpec = tween(durationMillis = 300)
     )
 
-    // Отображение индикатора
     CircularProgressIndicator(
         color = animatedColor,
         strokeWidth = 4.dp
@@ -99,13 +101,36 @@ fun ArtListScreen(
     onArtworkClick: (Long) -> Unit,
     navigateToMainScreen: () -> Unit
 ) {
+    var isSearch by remember {
+        mutableStateOf(ArtListScreenState.DEFAULT)
+    }
+    var searchQuery by remember {
+        mutableStateOf("")
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Artwork List") },
+                title = {
+                    when (isSearch) {
+                        ArtListScreenState.DEFAULT -> Text("Artwork List")
+                        ArtListScreenState.SEARCH -> TextField(
+                            value = searchQuery,
+                            onValueChange = { query ->
+                                searchQuery = query
+                            },
+                            label = { Text("Search") }
+                        )
+                    }
+                },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navigateToMainScreen() },
+                        onClick = {
+                            when (isSearch) {
+                                ArtListScreenState.DEFAULT -> navigateToMainScreen()
+                                ArtListScreenState.SEARCH -> isSearch = ArtListScreenState.DEFAULT
+                            }
+                        },
                         content = {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -116,7 +141,18 @@ fun ArtListScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFFe9e9dc)
-                )
+                ),
+                actions = {
+                    IconButton(
+                        onClick = { isSearch = ArtListScreenState.SEARCH },
+                        content = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.Send,
+                                contentDescription = "Search"
+                            )
+                        }
+                    )
+                }
             )
         },
         containerColor = Color(0xFFe9e9dc),
@@ -146,8 +182,8 @@ fun ArtListScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 content = {
                     items(
-                        state.searchResults?.art.orEmpty(),
-                        key = { art -> art.id ?: 0L }
+                        items = state.searchResults?.art.orEmpty(),
+                        key = { art -> "${art.id ?: 0L} + ${art.imageId.hashCode()} + ${art.artistTitle.hashCode()}".hashCode() }
                     ) { art ->
                         ArtItem(
                             art = art,

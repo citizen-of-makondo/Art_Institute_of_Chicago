@@ -11,11 +11,9 @@ import androidx.compose.runtime.Composable
 @Composable
 fun MainScreenRoot(
     navigateToArtworkList: () -> Unit,
-    navigateToArtistList: () -> Unit
 ) {
     MainScreenContent(
         navigateToArtworkList = navigateToArtworkList,
-        navigateToArtistList = navigateToArtistList
     )
 }
 
@@ -23,21 +21,26 @@ fun MainScreenRoot(
 @Composable
 fun MainScreenContent(
     navigateToArtworkList: () -> Unit,
-    navigateToArtistList: () -> Unit
 ) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Art Institute of Chicago") }) }
     ) {
         Column {
-            Button(
-                onClick = { navigateToArtworkList() },
-                content = { Text("Go to Artwork List") }
-            )
-
-            Button(
-                onClick = { navigateToArtistList() },
-                content = { Text("Go to Artist List") }
+            MainScreenItem(
+                title = "Go to Artwork List",
+                onClick = navigateToArtworkList
             )
         }
     }
+}
+
+@Composable
+fun MainScreenItem(
+    title: String,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = { onClick() },
+        content = { Text(title) }
+    )
 }
