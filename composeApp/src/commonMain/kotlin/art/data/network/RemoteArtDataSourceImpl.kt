@@ -13,12 +13,17 @@ private const val BASE_URL = "https://api.artic.edu/api/v1"
 
 class RemoteArtDataSourceImpl(
     private val httpClient: HttpClient
-): RemoteArtDataSource {
+) : RemoteArtDataSource {
 
-    override suspend fun getArtsRemote(): Result<ArtResponseDto, DataError.Remote> =
+    override suspend fun getArtsRemote(
+        query: String,
+        page: Int,
+        limit: Int
+    ): Result<ArtResponseDto, DataError.Remote> =
         safeCall<ArtResponseDto> {
             httpClient.get(urlString = "$BASE_URL/artworks") {
                 parameter("limit", 100)
+                parameter("page", page)
             }
         }
 

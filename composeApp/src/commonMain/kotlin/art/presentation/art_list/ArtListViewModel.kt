@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import art.core.domain.onError
 import art.core.domain.onSuccess
+import art.data.mappers.toDomain
 import art.domain.ArtworkRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,7 +17,7 @@ class ArtListViewModel(
     private val artworkRepository: ArtworkRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ArtListState())
+    private val _state = MutableStateFlow(value = ArtListState())
     val state = _state.asStateFlow()
         .stateIn(
             scope = viewModelScope,
@@ -29,23 +30,43 @@ class ArtListViewModel(
     }
 
     fun onAction(action: ArtListAction) {
-        when(action) {
+        when (action) {
             is ArtListAction.OnArtworkClick -> {}
             is ArtListAction.OnRetryClick -> getAllArtworks()
         }
     }
 
-    private fun getAllArtworks() = viewModelScope.launch {
-        _state.update { it.copy(isLoading = true) }
-        artworkRepository.getArtsRemote()
-            .onSuccess { result ->
-                _state.update {
-                    it.copy(
-                        searchResults = result,
-                        isLoading = false
-                    )
+    private fun getAllArtworks() =
+        viewModelScope.launch {
+            artworkRepository.getArtsRemote(query = "", page = 1)
+                .onSuccess {
+                    _state.update { state ->
+                        state.copy(
+                            searchResults = it.toDomain(),
+                            artworkList = it.toDomain().art,
+                            isLoading = false
+                        )
+                    }
                 }
-            }
-            .onError {  }
-    }
+                .onError { }
+        }
+
+    fun loadNextPage() =
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            artworkRepository.getArtsRemote(
+                query = "",
+                page = (state.value.searchResults?.pagination?.currentPage ?: 1) + 1
+            )
+                .onSuccess {
+                    _state.update { state ->
+                        state.copy(
+                            searchResults = it.toDomain(),
+                            artworkList = state.artworkList + it.toDomain().art,
+                            isLoading = false
+                        )
+                    }
+                }
+                .onError { }
+        }
 }

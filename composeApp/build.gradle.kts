@@ -1,4 +1,3 @@
-
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -87,10 +86,7 @@ kotlin {
 
             implementation(libs.bundles.ktor)
             implementation(libs.bundles.coil)
-
-            /* implementation(libs.androidx.paging.runtime)
-             implementation(libs.androidx.paging.compose)
-        */
+            implementation("co.touchlab:kermit:2.0.4") //Add latest version
         }
 
         desktopMain.dependencies {

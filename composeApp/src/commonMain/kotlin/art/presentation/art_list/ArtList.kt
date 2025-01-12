@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -32,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -40,6 +42,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import art.domain.ArtItem
+import co.touchlab.kermit.Logger
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
@@ -59,6 +62,7 @@ fun ArtListRoot(
 
     ArtListScreen(
         state = state,
+        loadNextPage = viewModel::loadNextPage,
         onArtworkClick = onArtworkClick,
         navigateToMainScreen = navigateToMainScreen
     )
@@ -98,6 +102,7 @@ fun AnimatedCircularProgressIndicator() {
 @Composable
 fun ArtListScreen(
     state: ArtListState,
+    loadNextPage: () -> Unit,
     onArtworkClick: (Long) -> Unit,
     navigateToMainScreen: () -> Unit
 ) {
@@ -106,6 +111,25 @@ fun ArtListScreen(
     }
     var searchQuery by remember {
         mutableStateOf("")
+    }
+    var previousFirstVisibleItemIndex by remember { mutableStateOf(0) }
+    val page by remember(state.searchResults) {
+        mutableStateOf(state.searchResults?.pagination?.currentPage ?: 0)
+    }
+
+    val staggeredGridState = rememberLazyStaggeredGridState()
+
+    LaunchedEffect(staggeredGridState, page) {
+        snapshotFlow { staggeredGridState.firstVisibleItemIndex }
+            .collect { firstVisibleItemIndex ->
+                Logger.d { "ArtListScreen ${firstVisibleItemIndex} ${previousFirstVisibleItemIndex} ${page}" }
+                if (firstVisibleItemIndex > previousFirstVisibleItemIndex) { // Проверяем направление скролла (вниз)
+                    if (previousFirstVisibleItemIndex > (70 * page)) { // Каждые 70 элементов
+                        loadNextPage()
+                    }
+                    previousFirstVisibleItemIndex = firstVisibleItemIndex
+                }
+            }
     }
 
     Scaffold(
@@ -173,6 +197,7 @@ fun ArtListScreen(
                 StaggeredGridCells.Adaptive(300.dp)
             }
             LazyVerticalStaggeredGrid(
+                state = staggeredGridState,
                 columns = size,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -182,8 +207,8 @@ fun ArtListScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 content = {
                     items(
-                        items = state.searchResults?.art.orEmpty(),
-                        key = { art -> "${art.id ?: 0L} + ${art.imageId.hashCode()} + ${art.artistTitle.hashCode()}".hashCode() }
+                        items = state.artworkList,
+                     //   key = { art -> "${art.id ?: 0L} + ${art.imageId.hashCode()} + ${art.artistTitle.hashCode()}" }
                     ) { art ->
                         ArtItem(
                             art = art,
